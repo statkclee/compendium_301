@@ -1,0 +1,142 @@
+---
+layout: page
+title: "Computational Documents"
+subtitle: "Makefile - PDF, HTML, DOCX"
+author:
+    name: xwMOOC
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+library(reticulate)
+use_condaenv("anaconda3")
+# reticulate::repl_python()
+```
+
+# WSL 2 {#windows-wsl2}
+
+윈도우 10 WSL2를 사용해서 `make` 프로그램을 돌린다. 이를 위해서 `wsl` 우분투에 R 최신버전을 설치하고 `tidyverse`등 연관 팩키지를 설치한다.
+
+1. 최신 R 설치 [^install-latest-R] 
+1. `install.packages("tidyverse")`를 설치하기 위한 사전 설치 팩키지
+    - `sudo apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev`
+1. R 팩키지 설치
+    - `install.packages(c("tidyverse", "DT", "here", "stopwords", "tidytext"), dependencies=TRUE)`
+
+[^install-latest-R]: [Lisa Tagliaferri (July 5, 2018), "How To Install R on Ubuntu 18.04"](https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-18-04)
+
+# 한국어 `make` 동영상 {#korean-make}
+
+아래 유튜브 동영상이 보이지 않는 경우, 즉 **{{% youtube "jnJL6ppn26Q" %}}** 메시지만 보이고 아무것도 보이지 않는 경우, `blogdown::install_hugo('0.54.0', force = TRUE)` 명령어로 다시 `blogdown` 휴고를 설치한다. [^blogdown-hugo]
+
+[^blogdown-hugo]: [stackoverflow, "Cannot use Markdown shortcodes in Blogdown's Rmd files"](https://stackoverflow.com/questions/55856904/cannot-use-markdown-shortcodes-in-blogdowns-rmd-files)
+
+```{r korean-make, eval = TRUE}
+blogdown::shortcode("youtube", "jnJL6ppn26Q")
+```
+
+
+# 다양한 문서 자동생성 {#makefile}
+
+`.Rmd` 파일을 제작한 후에 이를 기반으로 `.html`, `.pdf`, `.docx` 파일을 자동 생성시키는 사례를 살펴보자.
+
+이를 위해서 두가지 방법을 살펴본다.
+
+<div class = "row">
+  <div class = "col-md-6">
+**R 콘솔**
+
+```{r r-console-render, eval=FALSE}
+rmarkdown::render("analysis/twitter_report.Rmd")
+```
+
+
+  </div>
+  <div class = "col-md-6">
+**쉘 콘솔**
+
+```{bash shell-console-render, eval=FALSE}
+Rscript -e 'rmarkdown::render("analysis/twitter_report.Rmd")'
+```
+
+  </div>
+</div>
+
+# `Makefile` 자동화 [^make-automation] {#automte-with-Make}
+
+[^make-automation]: ["Automation with makefiles"](https://monashbioinformaticsplatform.github.io/2017-11-16-open-science-training/topics/automation.html)
+
+## 단순한 `Makefile` {#automte-with-simple-Make}
+
+가장 먼저 앞서 쉘 명령어로 실행한 스크립트를 실행하게 한다. 
+
+```{r makefile-with-r-start, eval=FALSE}
+analysis/twitter_report.html : analysis/twitter_report.Rmd
+    Rscript -e 'rmarkdown::render("analysis/twitter_report.Rmd")'
+```
+
+## 패턴 `Makefile` {#automte-with-pattern-Make}
+
+파일을 매번 일일이 지정하면 힘드니, `%`, `$<` 기호를 패턴으로 지정하여 자동화한다.
+변수(Variable)를 도입해서 깔끔한 `Makefile`을 제작하는 것도 흔히 사용되는 패턴이다.
+`analysis` 폴더를 변수로 지정하여 `Makefile` 중복을 없앤다. 
+
+```{r makefile-pattern-with-r-pattern, eval=FALSE}
+RMD_DIR = analysis
+
+${RMD_DIR}/twitter_report.html: ${RMD_DIR}/twitter_report.Rmd
+	Rscript -e 'rmarkdown::render("$<")'
+```
+
+## "phony" 규칙 {#automte-with-phony-Make}
+
+`all` 규칙을 통해 연관된 모든 파일들이 실행되게 한다.
+의존성이 여러번 걸린 경우 `all`에 TARGET을 설정하게 되면 무조건 해당 결과물을 생성시키기 위해 연관된 규칙이 모두 실행된다.
+
+```{r makefile-phony-with-r, eval=FALSE}
+RMD_DIR = analysis
+
+all: ${RMD_DIR}/%.html
+
+${RMD_DIR}/%.html: ${RMD_DIR}/twitter_report.Rmd
+	Rscript -e 'rmarkdown::render("$<")'
+```
+
+
+## "clean" 규칙 {#automte-with-clean-Make}
+
+`clean` 규칙을 통해 `Make`을 통해 만들어진 모든 파일들을 제거한다.
+
+```{r makefile-clean-with-r, eval=FALSE}
+RMD_DIR = analysis
+
+all: ${RMD_DIR}/%.html
+
+${RMD_DIR}/%.html: ${RMD_DIR}/twitter_report.Rmd
+	Rscript -e 'rmarkdown::render("$<")'
+	
+clean:
+	rm -rf ${RMD_DIR}/*.html
+```
+
+# STAT 545 [^stat545] {#automate-make-with-stat545}
+
+[^stat545]: [STAT 545, "Chapter 36 Automating data-analysis pipelines"](https://stat545.com/automating-pipeline.html)
+
+[Walks through the hands-on activity showing how to automate a data analytical pipeline with make
+](https://github.com/STAT545-UBC/make-activity)
+
+
