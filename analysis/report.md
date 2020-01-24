@@ -1,7 +1,7 @@
 ---
 title: "영어 단어길이 분포 보고서"
 author: "이광춘"
-date: "24 1월, 2020"
+date: "25 1월, 2020"
 output:
   html_document:
     keep_md: yes
