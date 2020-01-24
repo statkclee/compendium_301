@@ -1,20 +1,22 @@
-all: report.html
+DATA_DIR = data
+REPORT_DIR = analysis
+TEMP_DIR = processed
 
-clean:
-	rm -f words.txt histogram.tsv histogram.png report.md report.html
+all: $(REPORT_DIR)/report.html 
 
-report.html: report.Rmd histogram.tsv histogram.png
-	Rscript -e 'rmarkdown::render("$<")'
-
-histogram.png: histogram.tsv
-	Rscript -e 'library(ggplot2); qplot(Length, Freq, data=read.delim("$<")); ggsave("$@")'
-	rm Rplots.pdf
-
-histogram.tsv: histogram.r words.txt
+$(REPORT_DIR)/report.html: R/make_report.R $(TEMP_DIR)/word_len_histogram.png
 	Rscript $<
 
-words.txt: /usr/share/dict/words
-	cp $< $@
+$(TEMP_DIR)/word_len_histogram.png: R/make_histogram.R $(TEMP_DIR)/histogram.tsv
+	Rscript $<
 
-# words.txt:
-# 	Rscript -e 'download.file("http://svnweb.freebsd.org/base/head/share/dict/web2?view=co", destfile = "words.txt", quiet = TRUE)'
+$(TEMP_DIR)/histogram.tsv: R/make_dataframe.R $(DATA_DIR)/words.txt
+	Rscript $<
+
+$(DATA_DIR)/words.txt: R/download_words.R
+	Rscript $<
+
+clean:
+	rm -f analysis/*.html analysis/*.md $(TEMP_DIR)/*
+
+.PHONY: clean	

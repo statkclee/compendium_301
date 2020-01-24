@@ -1,0 +1,6 @@
+all:
+	@echo start build task !!!
+
+clean:
+	@echo clean all !!!
+  

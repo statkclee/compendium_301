@@ -1,18 +1,30 @@
 ---
-title: "English Word lengths"
-author: "Jenny Bryan"
+title: "영어 단어길이 분포 보고서"
+author: "이광춘"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     keep_md: yes
 ---
 
-```{r load-hist-dat, include = FALSE}
-hist_dat <- read.delim("histogram.tsv")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+knitr::opts_knit$set(root.dir = "..")
 ```
 
-On most *nix systems, the file `data/` contains a bunch of words. On my machine, it contains `r sum(hist_dat$Freq)` words.
+
+```{r load-hist-dat, include = FALSE}
+library(tidyverse)
+hist_dat <- read_delim("processed/histogram.tsv", delim = "\t")
+```
+
+On most *nix systems, the file `data/` contains a bunch of words. On my machine, it contains `r sum(hist_dat$n)` words.
 I computed the length of each word, i.e. the number of characters, and tabulated how many words consist of 1 character, 2 characters, etc.
-The most frequent word length is `r with(hist_dat, Length[which.max(Freq)])`.
+The most frequent word length is `r with(hist_dat, word_len[which.max(n)])`.
 Here is a histogram of word lengths.
-![*Fig. 1* A histogram of English word lengths](histogram.png)
+
+![*Fig. 1* A histogram of English word lengths](../processed/word_len_histogram.png)
+
+
