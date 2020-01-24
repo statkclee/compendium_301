@@ -41,10 +41,11 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
 
 [^blogdown-hugo]: [stackoverflow, "Cannot use Markdown shortcodes in Blogdown's Rmd files"](https://stackoverflow.com/questions/55856904/cannot-use-markdown-shortcodes-in-blogdowns-rmd-files)
 
-```{r korean-make, eval = TRUE}
+```{r korean-make, eval =FALSE}
 blogdown::shortcode("youtube", "jnJL6ppn26Q")
 ```
 
+- 바로가기: **[시골사는개발자, "Makefile 시작하기"](https://www.youtube.com/watch?v=jnJL6ppn26Q)**
 
 # 윈도우 `make` [^windows-make] {#makefile-windows}
 
@@ -88,6 +89,8 @@ make all
 
 
 # 예제 {#makefile-step-by-step}
+
+![GNU Make 작업흐름](make-pipeline.png){#id .class width="100%"}
 
 ## 파일 다운로드 {#step01-download}
 
