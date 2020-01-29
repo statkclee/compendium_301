@@ -1,4 +1,5 @@
 library(tidyverse)
+library(rmarkdown)
 
 rmarkdown::render("analysis/report.Rmd", 
                   output_format="html_document",
@@ -7,8 +8,8 @@ rmarkdown::render("analysis/report.Rmd",
                   output_dir = "analysis")
 
 rmarkdown::render("analysis/report.Rmd", 
-                  output_format="pdf_document",
-                  output_options = list(latex_engine = "xelatex"),
+                  output_format = pdf_document(toc=TRUE, latex_engine = 'xelatex',
+                                               pandoc_args = c("--variable", "mainfont=NanumGothic")),
                   output_file = "report.pdf",
                   encoding = 'UTF-8', 
                   output_dir = "analysis")

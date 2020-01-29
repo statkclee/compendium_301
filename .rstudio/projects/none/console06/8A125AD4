@@ -1,0 +1,6 @@
+]0;/home/rstudiorstudio@775db963746a:~$ [Krstudio@775db963746a:~$ pwd
+/home/rstudio
+]0;/home/rstudiorstudio@775db963746a:~$ ls
+analysis  automation-makefile.html  data	 index.html  kitematic	Makefile_duke
+asset	  automation-makefile.Rmd   DESCRIPTION  index.md    Makefile	README
+]0;/home/rstudiorstudio@775db963746a:~$ 
